@@ -12,14 +12,14 @@
 </head>
 <body>
 
-<h2>RGB 3D Scatter Plot from Image Santas</h2>
+<h2>RGB 3D Scatter Plot from Image SantasQ</h2>
 <div id="visualization"></div>
 
 <script>
   async function loadData() {
-    const response = await fetch('rgb_data.csv?v=2');  // キャッシュ対策
+    const response = await fetch('rgb_data.csv?v=2');
     const text = await response.text();
-    const lines = text.trim().split('\n').slice(1); // ヘッダー除去
+    const lines = text.trim().split('\n').slice(1);
 
     const data = lines.map(line => {
       const [id, x, y, r, g, b] = line.split(',').map(Number);
@@ -50,14 +50,23 @@
       yStep: 50,
       zStep: 50,
       pointSize: 1,
-      animation: false  // 自動回転を無効に
+      animation: false
     };
 
-    new vis.Graph3d(container, dataset, options);
+    const graph3d = new vis.Graph3d(container, dataset, options);
+
+    // バグ対策：マウス操作を手動で解除
+    document.addEventListener('mouseup', () => {
+      // vis.jsが内部的に設定している drag を強制終了
+      if (graph3d._onRelease) {
+        graph3d._onRelease(); // これで回転が解除される
+      }
+    });
   }
 
   loadData();
 </script>
+
 
 </body>
 </html>
